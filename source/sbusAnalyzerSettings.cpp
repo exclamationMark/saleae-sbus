@@ -4,7 +4,8 @@
 
 sbusAnalyzerSettings::sbusAnalyzerSettings()
 :	mInputChannel( UNDEFINED_CHANNEL ),
-	mBitRate( 9600 )
+	mBitRate( 10000 ),
+	mRCChannel(1)
 {
 	mInputChannelInterface.reset( new AnalyzerSettingInterfaceChannel() );
 	mInputChannelInterface->SetTitleAndTooltip( "Serial", "Standard sbus" );
@@ -16,8 +17,15 @@ sbusAnalyzerSettings::sbusAnalyzerSettings()
 	mBitRateInterface->SetMin( 1 );
 	mBitRateInterface->SetInteger( mBitRate );
 
+	mRCChannelInterface.reset( new AnalyzerSettingInterfaceInteger() );
+	mRCChannelInterface->SetTitleAndTooltip( "RC channel (1-14)",  "Specify RC channel to decode." );
+	mRCChannelInterface->SetMax( 14 );
+	mRCChannelInterface->SetMin( 1 );
+	mRCChannelInterface->SetInteger( mRCChannel );
+
 	AddInterface( mInputChannelInterface.get() );
 	AddInterface( mBitRateInterface.get() );
+	AddInterface( mRCChannelInterface.get() );
 
 	AddExportOption( 0, "Export as text/csv file" );
 	AddExportExtension( 0, "text", "txt" );
@@ -35,6 +43,7 @@ bool sbusAnalyzerSettings::SetSettingsFromInterfaces()
 {
 	mInputChannel = mInputChannelInterface->GetChannel();
 	mBitRate = mBitRateInterface->GetInteger();
+	mRCChannel = mRCChannelInterface->GetInteger();
 
 	ClearChannels();
 	AddChannel( mInputChannel, "sbus", true );
@@ -46,6 +55,7 @@ void sbusAnalyzerSettings::UpdateInterfacesFromSettings()
 {
 	mInputChannelInterface->SetChannel( mInputChannel );
 	mBitRateInterface->SetInteger( mBitRate );
+	mRCChannelInterface->SetInteger( mRCChannel );
 }
 
 void sbusAnalyzerSettings::LoadSettings( const char* settings )
@@ -55,6 +65,7 @@ void sbusAnalyzerSettings::LoadSettings( const char* settings )
 
 	text_archive >> mInputChannel;
 	text_archive >> mBitRate;
+	text_archive >> mRCChannel;
 
 	ClearChannels();
 	AddChannel( mInputChannel, "sbus", true );
@@ -68,6 +79,7 @@ const char* sbusAnalyzerSettings::SaveSettings()
 
 	text_archive << mInputChannel;
 	text_archive << mBitRate;
+	text_archive << mRCChannel;
 
 	return SetReturnString( text_archive.GetString() );
 }

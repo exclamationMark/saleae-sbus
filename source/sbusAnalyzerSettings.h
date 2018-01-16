@@ -18,10 +18,12 @@ public:
 	
 	Channel mInputChannel;
 	U32 mBitRate;
+	U32 mRCChannel;
 
 protected:
 	std::auto_ptr< AnalyzerSettingInterfaceChannel >	mInputChannelInterface;
 	std::auto_ptr< AnalyzerSettingInterfaceInteger >	mBitRateInterface;
+	std::auto_ptr< AnalyzerSettingInterfaceInteger >	mRCChannelInterface;
 };
 
 #endif //SBUS_ANALYZER_SETTINGS
