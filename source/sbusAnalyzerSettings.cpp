@@ -18,8 +18,8 @@ sbusAnalyzerSettings::sbusAnalyzerSettings()
 	mBitRateInterface->SetInteger( mBitRate );
 
 	mRCChannelInterface.reset( new AnalyzerSettingInterfaceInteger() );
-	mRCChannelInterface->SetTitleAndTooltip( "RC channel (1-14)",  "Specify RC channel to decode." );
-	mRCChannelInterface->SetMax( 14 );
+	mRCChannelInterface->SetTitleAndTooltip( "RC channel (1-16)",  "Specify RC channel to decode." );
+	mRCChannelInterface->SetMax( 16 );
 	mRCChannelInterface->SetMin( 1 );
 	mRCChannelInterface->SetInteger( mRCChannel );
 
