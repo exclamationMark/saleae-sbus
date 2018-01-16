@@ -4,7 +4,7 @@
 
 sbusAnalyzerSettings::sbusAnalyzerSettings()
 :	mInputChannel( UNDEFINED_CHANNEL ),
-	mBitRate( 10000 ),
+	mBitRate( 100000 ),
 	mRCChannel(1)
 {
 	mInputChannelInterface.reset( new AnalyzerSettingInterfaceChannel() );

@@ -20,6 +20,6 @@ Feel free to use for whatever you need this.
 
 # Using:
 * After installing, add the "sbus" decoder.
-* Leave the baud rate at 10,000, unless your receiver works at a different speed
+* Leave the baud rate at 100,000, unless your receiver works at a different speed
 * Pick an RC channel (example, typically 3=throttle, 5=arm state etc)
 * The data will be shown ranging from 1000 to 2000. 1500 is "center stick".
