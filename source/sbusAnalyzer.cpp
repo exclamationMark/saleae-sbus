@@ -28,47 +28,67 @@ void sbusAnalyzer::WorkerThread()
 
 	mSerial = GetAnalyzerChannelData( mSettings->mInputChannel );
 
-	if( mSerial->GetBitState() == BIT_LOW )
+	if( mSerial->GetBitState() == BIT_HIGH )
 		mSerial->AdvanceToNextEdge();
 
 	U32 samples_per_bit = mSampleRateHz / mSettings->mBitRate;
 	U32 samples_to_first_center_of_first_data_bit = U32( 1.5 * double( mSampleRateHz ) / double( mSettings->mBitRate ) );
 
+	U8 bitCounter = 0;
+	U8 startBit = 8 + (mSettings->mRCChannel-1)*11;
+	U16 channelData = 0;
+	U64 starting_sample = 0;
+
 	for( ; ; )
-	{
-		U8 data = 0;
-		U8 mask = 1 << 7;
-		
+	{	
 		mSerial->AdvanceToNextEdge(); //falling edge -- beginning of the start bit
 
-		U64 starting_sample = mSerial->GetSampleNumber();
+		if(bitCounter==0){
+			starting_sample = mSerial->GetSampleNumber();
+		}
 
 		mSerial->Advance( samples_to_first_center_of_first_data_bit );
 
 		for( U32 i=0; i<8; i++ )
 		{
-			//let's put a dot exactly where we sample this bit:
-			mResults->AddMarker( mSerial->GetSampleNumber(), AnalyzerResults::Dot, mSettings->mInputChannel );
 
-			if( mSerial->GetBitState() == BIT_HIGH )
-				data |= mask;
+			if(bitCounter >= startBit && bitCounter < startBit+11){
+				
+				channelData>>=1;
+				
+				if( mSerial->GetBitState() == BIT_LOW ){
+					channelData += 1024;
+					mResults->AddMarker( mSerial->GetSampleNumber(), AnalyzerResults::One, mSettings->mInputChannel );
+				}else{
+					mResults->AddMarker( mSerial->GetSampleNumber(), AnalyzerResults::Zero, mSettings->mInputChannel );
+				}
+			}else{
+				mResults->AddMarker( mSerial->GetSampleNumber(), AnalyzerResults::X, mSettings->mInputChannel );
+			}
+			bitCounter++;
 
 			mSerial->Advance( samples_per_bit );
-
-			mask = mask >> 1;
 		}
 
+		//PARITY BIT
+		mResults->AddMarker( mSerial->GetSampleNumber(), AnalyzerResults::Dot, mSettings->mInputChannel );
+		mSerial->Advance( samples_per_bit );
 
-		//we have a byte to save. 
-		Frame frame;
-		frame.mData1 = data;
-		frame.mFlags = 0;
-		frame.mStartingSampleInclusive = starting_sample;
-		frame.mEndingSampleInclusive = mSerial->GetSampleNumber();
+		//end of frame 
+		if(bitCounter >= 200){
+			Frame frame;
+			frame.mData1 = channelData;
+			frame.mFlags = 0;
+			frame.mStartingSampleInclusive = starting_sample;
+			frame.mEndingSampleInclusive = mSerial->GetSampleNumber();
 
-		mResults->AddFrame( frame );
-		mResults->CommitResults();
-		ReportProgress( frame.mEndingSampleInclusive );
+			bitCounter=0;
+			channelData=0;
+
+			mResults->AddFrame( frame );
+			mResults->CommitResults();
+			ReportProgress( frame.mEndingSampleInclusive );
+		}
 	}
 }
 
