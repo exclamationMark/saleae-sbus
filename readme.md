@@ -1,5 +1,3 @@
-# NOT WORKING YET. Come back soon.
-
 # sbus protocol (FrSky, Futaba) decoder for Saleae Analyzer
 This decoder is based on the sample analyzer from Saleae. It would be a fork, but just like on a fancy table, you are allowed only one fork per meal on github.
 [https://github.com/saleae/SampleAnalyzer](https://github.com/saleae/SampleAnalyzer)
@@ -13,7 +11,7 @@ Feel free to use for whatever you need this.
 # Building:
 * Follow the instruction from the Saleae Sample Analyzer (linked above).
 
-# Installing (with or without building):
+# Installing (with or without building) Linux and macOS only!:
 * Download only the /Release folder
 * In Logic, press "options" -> "preferences" -> "developer"
 * Add that folder to the path
